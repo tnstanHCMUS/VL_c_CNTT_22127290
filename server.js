@@ -1,30 +1,23 @@
-server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+const cors = require('cors'); //to fetch 
 const path = require('path');
-const mqtt = require('mqtt');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'public'))); //thay public bằng folder nào chứa script
 
-const MQTT_BROKER = "mqtt://test.mosquitto.org";
-const MQTT_TOPIC_alert = "/pet_feeder/alert"; 
-const MQTT_TOPIC_release_food = "/pet_feeder/release_food"; 
-const MQTT_TOPIC_feed = "/pet_feeder/history";
-const MQTT_TOPIC_weight = "/pet_feeder/weight";
-//const clientID = "mqtt-explorer-4ed131bc";
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public'))); // Ensure 'public' is the folder that contains your HTML, JS, and CSS files
 
-//connect mqtt
-const client = mqtt.connect(MQTT_BROKER, {
-  //clientId: clientID
+// Root route to serve login.html (you can change this to any other HTML file)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html')); // Serve the login page
 });
 
-//connect db
-const mongoURI = "mongodb+srv://khavinhthuan114:qozEkCoDhSHsIaH6@cluster0.dlkvl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // thay bằng tên mongodb
+// Connect to MongoDB
+const mongoURI = "mongodb+srv://khavinhthuan114:qozEkCoDhSHsIaH6@cluster0.dlkvl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 mongoose.connect(mongoURI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => {
@@ -32,6 +25,7 @@ mongoose.connect(mongoURI)
     process.exit(1);
   });
 
+// Define the User schema and model
 const UserSchema = new mongoose.Schema({
   surname: { type: String, required: true },
   name: { type: String, required: true },
@@ -41,6 +35,7 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', UserSchema);
 
+// Signup route
 app.post('/signup', async (req, res) => {
   const { surname, name, email, password, cfpassword } = req.body;
 
@@ -63,23 +58,21 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+// Login route
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Tìm kiếm người dùng dựa trên email
     const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(400).json({ success: false, message: "User not found." });
     }
 
-    // So sánh mật khẩu
     if (user.password !== password) {
       return res.status(400).json({ success: false, message: "Incorrect password." });
     }
 
-    // Nếu thành công
     res.status(200).json({ success: true, message: "Login successful." });
   } catch (err) {
     console.error("Error:", err);
@@ -87,53 +80,8 @@ app.post('/login', async (req, res) => {
   }
 });
 
-/*client.on('connect', () => {
-  console.log("Đã kết nối tới MQTT Broker");
-
-  client.subscribe(MQTT_TOPIC_alert, (err) => {
-    if (err) {
-      console.error("Không thể subscribe vào topic:", err);
-    } else {
-      console.log(`Đã subscribe vào topic ${MQTT_TOPIC_alert}`);
-    }
-  });
-  client.subscribe(MQTT_TOPIC_release_food, (err) => {
-    if (err) {
-      console.error("Không thể subscribe vào topic:", err);
-    } else {
-      console.log(`Đã subscribe vào topic ${MQTT_TOPIC_release_food}`);
-    }
-  });
-  client.subscribe(MQTT_TOPIC_feed, (err) => {
-    if (err) {
-      console.error("Không thể subscribe vào topic:", err);
-    } else {
-      console.log(`Đã subscribe vào topic ${MQTT_TOPIC_feed}`);
-    }
-  });
-  client.subscribe(MQTT_TOPIC_weight, (err) => {
-    if (err) {
-      console.error("Không thể subscribe vào topic:", err);
-    } else {
-      console.log(`Đã subscribe vào topic ${MQTT_TOPIC_weight}`);
-    }
-  });
-});
-
-app.post('/feed', (req, res) => {
-  const { action } = req.body;
-
-  if (action === 'feed') {
-    const message = 'feed';
-    client.publish(MQTT_TOPIC_release_food, message, () => {
-      console.log('Feed action sent to MQTT broker');
-    });
-
-    res.json({ success: true, message: 'Feed action sent to MQTT broker' });
-  } else {
-    res.status(400).json({ success: false, message: 'Invalid action' });
-  }
-});*/
-
+// Set up server to listen on port 8000
 const PORT = 8000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});

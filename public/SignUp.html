@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <!-- Custom CSS
+    <link rel="stylesheet" type="text/css" href="style.css"> -->
     <style>
         /* Animated Background with Motion Effect */
         body {
@@ -103,15 +103,14 @@
             margin-bottom: 20px;
             color: #2F80ED;
             font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-weight: bolder;
         }
         .signup-container .input-group {
             margin-bottom: 15px;
         }
         .signup-container .input-group label {
+            font-weight: bold;
             margin-bottom: 5px;
             font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-weight: bold;
         }
         .signup-container .input-group input {
             width: 100%;
@@ -119,8 +118,6 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-style: italic;
-            font-weight: lighter;
         }
         .signup-container button {
             width: 100%;
@@ -148,7 +145,7 @@
         <!-- Sign Up form -->
         <div class="signup-container">
             <h2>Sign Up</h2>
-            <form action="SignUp.php" method="POST">
+            <form id="signup-form">
                 <div class="input-group">
                     <label for="surname">Surname</label>
                     <input type="text" name="surname" id="surname" placeholder="Enter your surname" required>
@@ -166,9 +163,10 @@
                     <input type="password" name="password" id="password" placeholder="Enter your password" required>
                 </div>
                 <div class="input-group">
-                    <label for="cfpassword">Confirm Password</label>
-                    <input type="cfpassword" name="cfpassword" id="cfpassword" placeholder="Verify your password" required>
+                    <label for="cfpassword">CFPassword</label>
+                    <input type="password" name="cfpassword" id="cfpassword" placeholder="Enter your cfpassword" required>
                 </div>
+
                 <button type="submit">Sign Up</button>
             </form>
         </div>
@@ -180,50 +178,6 @@
     <!-- Optional JavaScript; Bootstrap 5 requires Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"></script>
-    <script>
-        async function handleSignUp(event) {
-            event.preventDefault(); // Ngăn gửi form mặc định
-        
-            const surname = document.getElementById("surname").value;
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const cfpassword = document.getElementById("cfpassword").value;
-        
-            if (password !== cfpassword) {
-                alert("Passwords do not match. Please try again.");
-                return;
-            }
-        
-            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailPattern.test(email)) {
-                alert("Invalid email format. Please try again.");
-                return;
-            }
-        
-            try {
-                const response = await fetch("http://localhost:8800/signup", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ surname, name, email, password }),
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    alert("Sign up successful. Please log in.");
-                } else {
-                    console.error("Error:", data.message);
-                    alert(data.message || "Sign up failed. Please try again later.");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Sign up failed. Please try again later.");
-            }
-        }
-        
-        document.querySelector("form").addEventListener("submit", handleSignUp);
-        
-    </script>
+    <script src="signup.js"></script>
 </body>
 </html>

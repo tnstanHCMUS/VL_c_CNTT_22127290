@@ -1,4 +1,4 @@
-signup.js
+//signup.js
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('form');
   const passwordField = document.getElementById('password');
@@ -55,7 +55,6 @@ document.addEventListener('DOMContentLoaded', function () {
           .then(data => {
               if (data.success) {
                   alert('User created successfully.');
-
                   window.location.href = "login.html";
               } else {
                   alert(data.message || 'Signup failed.');
